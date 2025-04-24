@@ -1,0 +1,64 @@
+{
+	"winget": [
+		{
+			"packageId": "Git.Git",
+			"name": "Git"
+		},
+		{
+			"packageId": "Microsoft.VisualStudioCode",
+			"name": "Visual Studio Code"
+		},
+		{
+			"packageId": "9NTSNMSVCB5L",
+			"packageSource": "msstore",
+			"name": "Screenbox"
+		},
+
+		{
+			"packageId": "Microsoft.PowerToys",
+			"name": "PowerToys"
+		},
+		{
+			"packageId": "9N97ZCKPD60Q",
+			"packageSource": "msstore",
+			"name": "Unigram"
+		},
+		{
+			"packageId": "Microsoft.VCRedist.2015+.x64",
+			"name": "Visual C++ Redistributable 2015+"
+		},
+		{
+			"packageId": "AgileBits.1Password",
+			"name": "1Password"
+		},
+		{
+			"packageId": "Docker.DockerDesktop",
+			"name": "Docker Desktop"
+		},
+		{
+			"packageId": "RamenSoftware.Windhawk",
+			"name": "Windhawk"
+		},
+		{
+			"packageId": "Tonec.InternetDownloadManager",
+			"name": "Internet Download Manager"
+		},
+		{
+			"packageId": "qBittorrent.qBittorrent",
+			"name": "qBittorrent"
+		},
+		{
+			"packageId": "Obsidian.Obsidian",
+			"name": "Obsidian"
+		}
+	],
+	"choco": [
+		{ "packageName": "7zip" },
+		{ "packageName": "python" },
+		{ "packageName": "adb" },
+		{ "packageName": "vim" },
+		{ "packageName": "wingetui" },
+		{ "packageName": "git" },
+		{ "packageName": "starship" }
+	]
+}
