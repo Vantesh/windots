@@ -1,3 +1,4 @@
+#Requires -Version 7
 
 @('Utils/Utils.psm1', 'Appinstaller/installer.psm1') | ForEach-Object { Import-Module (Join-Path $PSScriptRoot "modules/$_") -Force }
 
