@@ -1,0 +1,13 @@
+[core]
+  editor = code --wait
+  autocrlf = true
+
+[alias]
+  st = status -sb
+  co = checkout
+  br = branch
+  cm = commit
+  lg = log --oneline --graph --all
+
+[push]
+  default = simple
