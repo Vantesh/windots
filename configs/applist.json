@@ -13,6 +13,10 @@
 			"packageSource": "msstore",
 			"name": "Screenbox"
 		},
+		{
+			"packageId": "ajeetdsouza.zoxide",
+			"name": "Zoxide"
+		},
 
 		{
 			"packageId": "Microsoft.PowerToys",
