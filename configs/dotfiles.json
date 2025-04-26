@@ -1,0 +1,37 @@
+[
+	{
+		"source": ".gitconfig",
+		"target": "%USERPROFILE%/.gitconfig",
+		"type": "file"
+	},
+	{
+		"source": "powershell/ohmyposh",
+		"target": "%USERPROFILE%/.config/powershell/ohmyposh",
+		"type": "directory"
+	},
+	{
+		"source": "powershell/aliases.ps1",
+		"target": "%USERPROFILE%/.config/powershell/aliases.ps1",
+		"type": "file"
+	},
+	{
+		"source": "lsd",
+		"target": "%USERPROFILE%/.config/lsd",
+		"type": "directory"
+	},
+	{
+		"source": "terminal/lscolors",
+		"target": "%USERPROFILE%/.config/lscolors",
+		"type": "directory"
+	},
+	{
+		"source": "terminal/settings.json",
+		"target": "%LOCALAPPDATA%/Packages/Microsoft.WindowsTerminal_8wekyb3d8bbwe/LocalState/settings.json",
+		"type": "file"
+	},
+	{
+		"source": "winget/settings.json",
+		"target": "%LOCALAPPDATA%/Packages/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe/LocalState/settings.json",
+		"type": "file"
+	}
+]
