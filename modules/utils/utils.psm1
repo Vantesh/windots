@@ -46,15 +46,40 @@ function Write-ColorText {
       Write-Host -NoNewline $remainder -ForegroundColor $defaultColor
     }
 
-    if (-not $NoNewLine) { Write-Host "" }
+    if (-not $NoNewLine) {
+      Write-Host ""
+    }
   }
 
   $Host.UI.RawUI.ForegroundColor = $defaultColor
 }
+function Read-ColoredInput {
+  param (
+    [Parameter(Mandatory)]
+    [string]$Prompt,
+
+    [string]$Color = 'Cyan'
+  )
+
+  $originalColor = [Console]::ForegroundColor
+
+  try {
+    # Set prompt color
+    [Console]::ForegroundColor = $Color
+    Write-Host -NoNewline $Prompt
+    # Reset to original color
+    [Console]::ForegroundColor = $originalColor
+    return Read-Host
+  }
+  finally {
+    [Console]::ForegroundColor = $originalColor
+  }
+}
+
 
 function Write-Info {
   param ([string]$Message)
-  Write-ColorText "[{Green}✔{White}] {Magenta}$Message"
+  Write-ColorText "[{Green}✔{White}] {white}$Message"
 }
 
 function Write-WarningStyled {
@@ -74,22 +99,44 @@ function Write-InstallStatus {
   )
 
   $sourceColor = switch ($Source.ToLower()) {
-    "winget" { "Magenta" }
-    "choco" { "Cyan" }
-    default { "Gray" }
+    "winget" {
+      "Magenta"
+    }
+    "choco" {
+      "Cyan"
+    }
+    default {
+      "Gray"
+    }
   }
 
   $statusColor = switch ($Status.ToLower()) {
-    "exists" { "Yellow" }
-    "success" { "Green" }
-    "failed" { "Red" }
-    default { "Gray" }
+    "exists" {
+      "Yellow"
+    }
+    "success" {
+      "Green"
+    }
+    "failed" {
+      "Red"
+    }
+    default {
+      "Gray"
+    }
   }
 
   $label = $Source.PadRight(7)
   $dots = "-" * ([Math]::Max(1, 42 - $Name.Length))
 
   Write-ColorText "{DarkGray}* {${sourceColor}}$label {White}$Name {Gray}$dots {${statusColor}}$Status"
+}
+function Test-IsValidEmail {
+  param (
+    [string]$Email
+  )
+
+  # Updated regex to allow GitHub noreply emails and legit domains
+  return $Email -match '^[\w\.\+\-]+@([\w\-]+\.)+[a-zA-Z]{2,}$'
 }
 
 function Test-IsAdmin {
@@ -118,7 +165,12 @@ function Test-IsInstalled {
     [string]$MatchName      # Fallback name (e.g., "Git")
   )
 
-  $target = if ($MatchName) { $MatchName } else { $AppName }
+  $target = if ($MatchName) {
+    $MatchName
+  }
+  else {
+    $AppName
+  }
 
   # Winget check by ID
   if ($global:WingetInstalledApps -and $global:WingetInstalledApps -match [regex]::Escape($AppName)) {
