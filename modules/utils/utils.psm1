@@ -61,18 +61,16 @@ function Read-ColoredInput {
     [string]$Color = 'Cyan'
   )
 
-  $originalColor = [Console]::ForegroundColor
+  $originalColor = $Host.UI.RawUI.ForegroundColor
 
   try {
-    # Set prompt color
-    [Console]::ForegroundColor = $Color
-    Write-Host -NoNewline $Prompt
-    # Reset to original color
-    [Console]::ForegroundColor = $originalColor
+    $Host.UI.RawUI.ForegroundColor = $Color
+    Write-Host -NoNewline "$Prompt "
+    $Host.UI.RawUI.ForegroundColor = $originalColor
     return Read-Host
   }
   finally {
-    [Console]::ForegroundColor = $originalColor
+    $Host.UI.RawUI.ForegroundColor = $originalColor
   }
 }
 
