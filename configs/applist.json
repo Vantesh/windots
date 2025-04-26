@@ -17,7 +17,14 @@
 			"packageId": "ajeetdsouza.zoxide",
 			"name": "Zoxide"
 		},
-
+		{
+			"packageId": "junegunn.fzf",
+			"name": "fzf"
+		},
+		{
+			"packageId": "sharkdp.bat",
+			"name": "bat"
+		},
 		{
 			"packageId": "Microsoft.PowerToys",
 			"name": "PowerToys"
@@ -57,12 +64,26 @@
 		}
 	],
 	"choco": [
-		{ "packageName": "7zip" },
-		{ "packageName": "python" },
-		{ "packageName": "adb" },
-		{ "packageName": "vim" },
-		{ "packageName": "wingetui" },
-		{ "packageName": "git" },
-		{ "packageName": "starship" }
+		{
+			"packageName": "7zip"
+		},
+		{
+			"packageName": "python"
+		},
+		{
+			"packageName": "adb"
+		},
+		{
+			"packageName": "vim"
+		},
+		{
+			"packageName": "wingetui"
+		},
+		{
+			"packageName": "git"
+		},
+		{
+			"packageName": "starship"
+		}
 	]
 }
