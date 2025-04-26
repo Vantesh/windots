@@ -1,0 +1,12 @@
+[
+	{
+		"name": "PSReadLine",
+		"requiresImport": false,
+		"disableNameChecking": false
+	},
+	{
+		"name": "lsd-aliases",
+		"requiresImport": true,
+		"disableNameChecking": true
+	}
+]
