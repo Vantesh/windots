@@ -1,0 +1,37 @@
+name:
+  .trash: 
+  .cargo: 
+  .emacs.d: 
+  a.out: 
+  .DS_Store: 󰈙
+  .hg: 󰗨
+  .docker: 
+  .gradle: 
+  contacts: 󰛋
+  searches: 󱁴
+  git: 
+  .bashrc: 
+  .bash_profile: 
+  .bash_history: 
+  .bash_aliases: 
+  .bash_logout: 
+
+extension:
+  hs: 
+  py: 󰌠
+  cmake: 
+  rb: 
+  php: 
+  flac: 
+  mp3: 
+  toml: 
+  yaml: 
+  yml: 
+
+filetype:
+  executable: 
+  symlink-dir: 
+  symlink-file: 
+  device-char: 
+  device-block: 󰜫
+  special: 
