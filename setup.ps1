@@ -26,19 +26,21 @@ if (-not (Test-IsOnline)) {
 if (-not(Get-Command choco -ErrorAction SilentlyContinue)) {
   Install-Choco
 }
+#------------------------------- Install apps -------------------------------
 Write-TitleBox "Installing Apps" -Color Cyan
 Invoke-AppInstallers
 
-
+#-----------------------------Terminal tweaks--------------------------------
 write-TitleBox "Installing Terminal tweaks" -Color Cyan
 Set-DefaultPowerShellProfile
 Install-ModulesFromJson
 Import-ModulesFromJson
 Install-CatppuccinTheme
-
+#-----------------------------Dotfiles---------------------------------------
 write-TitleBox "Applying dotfiles" -Color Cyan
 Copy-DotfilesFromConfig
 
+#-----------------------------Git Config-------------------------------------
 write-TitleBox "Setting up git identity" -Color Cyan
 function Set-GitIdentity {
 
@@ -66,5 +68,7 @@ function Set-GitIdentity {
 }
 Set-GitIdentity
 
+
+#-----------------------------Install Office----------------------------------
 write-TitleBox "Installing Office" -Color Cyan
 Install-Office
