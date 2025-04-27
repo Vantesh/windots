@@ -220,22 +220,6 @@ function Get-ScriptRoot {
 }
 
 
-function Copy-ItemWithBackup {
-  param (
-    [string]$Target,
-    [string]$Source
-  )
-
-  if (Test-Path $Target) {
-    $timestamp = Get-Date -Format "yyyyMMdd_HHmmss"
-    $backup = "$Target.bak_$timestamp"
-    Rename-Item -Path $Target -NewName $backup
-    Write-WarningStyled "Backed up existing file: $Target -> $backup"
-  }
-
-  Copy-Item -Path $Source -Destination $Target -Force
-  Write-Info "Replaced $Target with $Source"
-}
 
 function Set-SafeLink {
   param (
@@ -250,34 +234,5 @@ function Set-SafeLink {
   catch {
     Copy-Item -Path $Source -Destination $Target -Recurse -Force
     Write-WarningStyled "Symlink failed, copied instead: $Source -> $Target"
-  }
-}
-
-
-function Install-Choco {
-  if (-not (Get-Command choco -ErrorAction SilentlyContinue)) {
-    Write-TitleBox "Installing Choco"
-    Set-ExecutionPolicy Bypass -Scope Process -Force
-
-    try {
-      $chocoScript = "Set-ExecutionPolicy Bypass -Scope Process -Force; `
-        [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; `
-        iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))"
-
-      Invoke-Expression $chocoScript
-
-      if (Get-Command choco -ErrorAction SilentlyContinue) {
-        Write-Info "Chocolatey installed successfully."
-      }
-      else {
-        Write-ErrorStyled "Chocolatey installation failed."
-      }
-    }
-    catch {
-      Write-ErrorStyled "Exception occurred during Chocolatey install: $_"
-    }
-  }
-  else {
-    Write-Info "Chocolatey is already installed."
   }
 }

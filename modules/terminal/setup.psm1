@@ -1,33 +1,22 @@
-function Set-DefaultPowerShellProfile {
-  $sourceProfile = "$PSScriptRoot\..\..\dotfiles\powershell\profile.ps1"
-  $userProfilePath = [System.IO.Path]::Combine($env:UserProfile, 'Documents\PowerShell\profile.ps1')
-
-  # Create directories if missing
-  New-DirectoryIfMissing -Path (Split-Path $userProfilePath)
+function Set-ProfileForAllHosts {
+  # Define source profile and the target location for All Hosts profile
+  $sourceProfile = Join-Path (Get-ScriptRoot) ".\dotfiles\powershell\profile.ps1"
+  $allHostsProfilePath = [System.IO.Path]::Combine($env:UserProfile, 'Documents\PowerShell\profile.ps1')
 
   if (Test-Path $sourceProfile) {
-    Copy-Item -Path $sourceProfile -Destination $userProfilePath -Force
-    Write-Info "Copied PowerShell profile to $userProfilePath"
+    # Create the directory if it doesn't exist
+    New-DirectoryIfMissing -Path (Split-Path $allHostsProfilePath)
 
-    # Make sure All Hosts profile is initialized
-    $allHostsProfile = $PROFILE.CurrentUserAllHosts
-    if ([string]::IsNullOrWhiteSpace($allHostsProfile)) {
-      $allHostsProfile = [System.IO.Path]::Combine($env:UserProfile, 'Documents\PowerShell\Microsoft.PowerShell_profile.ps1')
-    }
+    # Copy the source profile to the All Hosts profile path
+    Copy-Item -Path $sourceProfile -Destination $allHostsProfilePath -Force
+    Write-Info "Copied PowerShell profile to $allHostsProfilePath"
 
-    if (-not (Test-Path $allHostsProfile)) {
-      New-DirectoryIfMissing -Path (Split-Path $allHostsProfile)
-      New-Item -ItemType File -Path $allHostsProfile -Force | Out-Null
-      Write-Info "Created new All Hosts profile at $allHostsProfile"
-    }
-
-    Set-Content -Path $allHostsProfile -Value "`$profile = '$userProfilePath'"
-    Write-Info "Set All Hosts profile to load user profile."
   }
   else {
     Write-ErrorStyled "Source profile file not found: $sourceProfile"
   }
 }
+
 
 function Add-ModuleToProfile {
   param (
@@ -35,9 +24,7 @@ function Add-ModuleToProfile {
     [switch]$SuppressDuplicates,
     [switch]$DisableNameChecking
   )
-
-  # Fix null profile path
-  $profilePath = $PROFILE.CurrentUserAllHosts
+  $profilePath = [System.IO.Path]::Combine($env:UserProfile, 'Documents\PowerShell\profile.ps1')
   if ([string]::IsNullOrWhiteSpace($profilePath)) {
     $profilePath = [System.IO.Path]::Combine($env:UserProfile, 'Documents\PowerShell\profile.ps1')
   }
@@ -62,7 +49,7 @@ function Add-ModuleToProfile {
 
 function Install-ModulesFromJson {
   param (
-    [string]$ModulesJsonPath = (Join-Path $PSScriptRoot '..\..\configs\modules.json')
+    [string]$ModulesJsonPath = (Join-Path (Get-ScriptRoot) ".\configs\modules.json")
   )
 
   if (-not (Test-Path $ModulesJsonPath)) {
@@ -93,7 +80,7 @@ function Install-ModulesFromJson {
 
 function Import-ModulesFromJson {
   param (
-    [string]$ModulesJsonPath = (Join-Path $PSScriptRoot '..\..\configs\modules.json')
+    [string]$ModulesJsonPath = (Join-Path (Get-ScriptRoot) ".\configs\modules.json")
   )
 
   if (-not (Test-Path $ModulesJsonPath)) {
