@@ -109,7 +109,7 @@ sorting:
   # Whether to group directories together and where.
   # When "classic" is set, this is set to "none".
   # Possible values: first, last, none
-  dir-grouping: none
+  dir-grouping: first
 
 # == No Symlink ==
 # Whether to omit showing symlink targets
@@ -138,7 +138,7 @@ header: false
 # == Literal ==
 # Whether to show quotes on filenames.
 # Possible values: false, true
-literal: false
+literal: true
 
 # == Truncate owner ==
 # How to truncate the username and group names for a file if they exceed a certain
