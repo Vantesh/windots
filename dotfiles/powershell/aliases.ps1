@@ -69,7 +69,51 @@ if (Get-Command bat -ErrorAction SilentlyContinue) {
   Set-Alias cat bat -Force
 }
 
-function which($name) {
-  Get-Command $name | Select-Object -ExpandProperty Definition
+# Function to replicate "which" and pipe to bat for syntax highlighting
+function which {
+  param (
+    [string[]]$names
+  )
+
+  # Check if 'bat' is available
+  $isBatAvailable = Get-Command 'bat' -ErrorAction SilentlyContinue
+
+  foreach ($name in $names) {
+    try {
+      $command = Get-Command $name -ErrorAction Stop
+      if ($command.CommandType -eq 'Alias') {
+        Write-Host "Alias -> $($command.Definition)"
+      }
+      elseif ($command.CommandType -eq 'Function') {
+
+        if ($isBatAvailable) {
+          $command.ScriptBlock | bat
+        }
+        else {
+          $command.ScriptBlock
+        }
+      }
+      elseif ($command.CommandType -eq 'Cmdlet' -or $command.CommandType -eq 'Application') {
+        if ((Test-Path $command.Definition) -and ((Get-Item $command.Definition).Extension -match '\.(ps1|sh|bat|cmd|py|pl|rb|js|html|css|cpp|java)$')) {
+
+          if ($isBatAvailable) {
+            Get-Content $command.Definition | bat
+          }
+          else {
+            Get-Content $command.Definition
+          }
+        }
+        else {
+          Write-Host "$($command.Definition)"
+        }
+      }
+      else {
+        Write-Host "$($command.Source)"
+      }
+    }
+    catch {
+      Write-Host "Command '$name' not found."
+    }
+  }
 }
 
