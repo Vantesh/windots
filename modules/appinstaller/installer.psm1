@@ -1,3 +1,29 @@
+function Install-Choco {
+  if (-not (Get-Command choco -ErrorAction SilentlyContinue)) {
+    Write-TitleBox "Installing Chocolatey" -Color Cyan
+    try {
+      $chocoScript = "Set-ExecutionPolicy Bypass -Scope Process -Force; `
+        [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; `
+        iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))"
+
+      Invoke-Expression $chocoScript *> $null 2>&1
+      if (Get-Command choco -ErrorAction SilentlyContinue) {
+        Write-Info "Chocolatey installed successfully."
+      }
+      else {
+        Write-ErrorStyled "Chocolatey installation failed."
+      }
+    }
+    catch {
+      Write-ErrorStyled "Exception occurred during Chocolatey install: $_"
+    }
+  }
+  else {
+    Write-Info "Chocolatey is already installed."
+  }
+}
+
+
 function Install-WinGetApp {
   param (
     [string]$PackageID,
@@ -6,7 +32,12 @@ function Install-WinGetApp {
     [string]$Source
   )
 
-  $displayName = if ($Name) { $Name } else { $PackageID }
+  $displayName = if ($Name) {
+    $Name 
+  }
+  else {
+    $PackageID 
+  }
 
   if (Test-IsInstalled -AppName $PackageID -MatchName $Name) {
     Write-InstallStatus -Source "winget" -Name $displayName -Status "exists"
@@ -79,7 +110,12 @@ function Invoke-AppInstallers {
   foreach ($app in $appList.winget) {
     $id = $app.packageId
     $name = $app.name
-    $source = if ($app.packageSource) { $app.packageSource } else { "winget" }
+    $source = if ($app.packageSource) {
+      $app.packageSource 
+    }
+    else {
+      "winget" 
+    }
     Install-WinGetApp -PackageID $id -Name $name -AdditionalArgs $defaultWingetArgs -Source $source
   }
 
