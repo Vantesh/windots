@@ -4,6 +4,7 @@
   'Utils/Utils.psm1',
   'Appinstaller/installer.psm1',
   'Office/installer.psm1',
+  'dotfiles/setup.psm1',
   'Terminal/setup.psm1'
 ) | ForEach-Object {
   Import-Module (Join-Path $PSScriptRoot "modules/$_") -Force
@@ -23,11 +24,12 @@ if (-not (Test-IsOnline)) {
 
 }
 
-if (-not(Get-Command choco -ErrorAction SilentlyContinue)) {
-  Install-Choco
-}
+
+Install-Choco
+
 #------------------------------- Install apps -------------------------------
 Write-TitleBox "Installing Apps" -Color Cyan
+Install-Choco
 Invoke-AppInstallers
 
 #-----------------------------Terminal tweaks--------------------------------
@@ -38,8 +40,7 @@ Import-ModulesFromJson
 Install-CatppuccinTheme
 #-----------------------------Dotfiles---------------------------------------
 write-TitleBox "Applying dotfiles" -Color Cyan
-Copy-DotfilesFromConfig
-
+Initialize-Dotfiles
 #-----------------------------Git Config-------------------------------------
 write-TitleBox "Setting up git identity" -Color Cyan
 function Set-GitIdentity {
