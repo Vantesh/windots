@@ -1,5 +1,6 @@
 name:
   .trash: 
+
   .cargo: 
   .emacs.d: 
   a.out: 
@@ -8,7 +9,7 @@ name:
   .docker: 
   .gradle: 
   contacts: 󰛋
-  searches: 󱁴
+  searches: 󰥨
   git: 
   .bashrc: 
   .bash_profile: 
@@ -24,12 +25,15 @@ extension:
   php: 
   flac: 
   mp3: 
+  mp4: 󰕧
   toml: 
-  yaml: 
-  yml: 
+  yaml: 
+  yml: 
+  xml: 󰗀
 
 filetype:
   executable: 
+  file: 
   symlink-dir: 
   symlink-file: 
   device-char: 
