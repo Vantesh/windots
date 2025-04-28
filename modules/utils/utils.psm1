@@ -112,6 +112,12 @@ function Write-InstallStatus {
     "exists" {
       "Yellow"
     }
+    "installing" {
+      "Cyan"
+    }
+    "installed" {
+      "Green"
+    }
     "success" {
       "Green"
     }
@@ -125,9 +131,16 @@ function Write-InstallStatus {
 
   $label = $Source.PadRight(7)
   $dots = "-" * ([Math]::Max(1, 42 - $Name.Length))
-
-  Write-ColorText "{DarkGray}* {${sourceColor}}$label {White}$Name {Gray}$dots {${statusColor}}$Status"
+  if ($Status -eq "installing") {
+    Write-ColorText "{DarkGray}* {${sourceColor}}$label {White}$Name {Gray}$dots {${statusColor}}$Status" -NoNewLine
+  }
+  else {
+    # Use ANSI escape sequence to clear the line more efficiently
+    Write-Host "`e[2K`r" -NoNewline
+    Write-ColorText "{DarkGray}* {${sourceColor}}$label {White}$Name {Gray}$dots {${statusColor}}$Status"
+  }
 }
+
 function Test-IsValidEmail {
   param (
     [string]$Email
@@ -234,5 +247,17 @@ function Set-SafeLink {
   catch {
     Copy-Item -Path $Source -Destination $Target -Recurse -Force
     Write-WarningStyled "Symlink failed, copied instead: $Source -> $Target"
+  }
+}
+
+function Backup-IfExists {
+  param (
+    [string]$Path,
+    [string]$Suffix = (Get-Date -Format "yyyyMMdd_HHmmss")
+  )
+  if (Test-Path $Path) {
+    $backupPath = "$Path.bak_$Suffix"
+    Write-WarningStyled "Backing up existing $Path"
+    Rename-Item -Path $Path -NewName $backupPath
   }
 }

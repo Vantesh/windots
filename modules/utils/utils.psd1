@@ -22,7 +22,8 @@
     'Copy-ItemWithBackup',
     'Set-SafeLink',
     'Install-Choco',
-    'Install-WinGetApp'
+    'Install-WinGetApp',
+    'Backup-IfExists'
   )
 
   PrivateData       = @{
