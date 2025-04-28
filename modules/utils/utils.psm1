@@ -176,6 +176,19 @@ function Test-IsInstalled {
     [string]$MatchName      # Fallback name (e.g., "Git")
   )
 
+  # Initialize cache if it doesn't exist
+  if (-not (Get-Variable -Name 'InstalledAppsCache' -Scope 'Script' -ErrorAction SilentlyContinue)) {
+    $script:InstalledAppsCache = @{}
+  }
+
+  # Create a cache key from the combined parameters
+  $cacheKey = "$AppName|$MatchName"
+
+  # Return cached result if available
+  if ($script:InstalledAppsCache.ContainsKey($cacheKey)) {
+    return $script:InstalledAppsCache[$cacheKey]
+  }
+
   $target = if ($MatchName) {
     $MatchName
   }
@@ -183,36 +196,47 @@ function Test-IsInstalled {
     $AppName
   }
 
-  # Winget check by ID
+  # Fast checks first
+  # 1. Winget check by ID (memory check, already cached)
   if ($global:WingetInstalledApps -and $global:WingetInstalledApps -match [regex]::Escape($AppName)) {
+    $script:InstalledAppsCache[$cacheKey] = $true
     return $true
   }
 
-  # CLI check (in PATH?)
-  if (Get-Command $target -ErrorAction SilentlyContinue) {
-    return $true
-  }
-  # Chocolatey check
+  # 2. Chocolatey check (memory check, already cached)
   if ($global:ChocoInstalledApps -and $global:ChocoInstalledApps -contains $target) {
+    $script:InstalledAppsCache[$cacheKey] = $true
     return $true
   }
 
-  # 4. Registry check
+  # 3. CLI check (in PATH?)
+  if ($target -and (Get-Command $target -ErrorAction SilentlyContinue)) {
+    $script:InstalledAppsCache[$cacheKey] = $true
+    return $true
+  }
+
+  # 4. Registry check (most expensive, do last)
+  $escTarget = [regex]::Escape($target)
   $registryPaths = @(
     "HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\*",
     "HKLM:\Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\*"
   )
+
   foreach ($path in $registryPaths) {
-    $apps = Get-ItemProperty $path -ErrorAction SilentlyContinue
-    if ($apps.DisplayName -like "*$target*") {
+    # More efficient direct filtering
+    $apps = Get-ItemProperty $path -ErrorAction SilentlyContinue |
+      Where-Object { $_.DisplayName -and $_.DisplayName -match $escTarget }
+
+    if ($apps) {
+      $script:InstalledAppsCache[$cacheKey] = $true
       return $true
     }
   }
 
+  # Cache the negative result as well
+  $script:InstalledAppsCache[$cacheKey] = $false
   return $false
 }
-
-
 
 function New-DirectoryIfMissing {
   param ([string]$Path)
