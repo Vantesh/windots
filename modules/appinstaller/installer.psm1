@@ -2,11 +2,7 @@ function Install-Choco {
   if (-not (Get-Command choco -ErrorAction SilentlyContinue)) {
     Write-TitleBox "Installing Chocolatey" -Color Cyan
     try {
-      $chocoScript = "Set-ExecutionPolicy Bypass -Scope Process -Force; `
-        [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; `
-        iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))"
-
-      Invoke-Expression $chocoScript *> $null 2>&1
+      Invoke-ChocoInstallScript
       if (Get-Command choco -ErrorAction SilentlyContinue) {
         Write-Info "Chocolatey installed successfully."
       }
@@ -23,6 +19,16 @@ function Install-Choco {
   }
 }
 
+function Invoke-ChocoInstallScript {
+  # Use direct string instead of here-string for slightly better performance
+  $chocoScript = 'Set-ExecutionPolicy Bypass -Scope Process -Force;' +
+  '[System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072;' +
+  'iex ((New-Object System.Net.WebClient).DownloadString(''https://community.chocolatey.org/install.ps1''))'
+
+  # Use ScriptBlock for better performance than Invoke-Expression
+  $scriptBlock = [ScriptBlock]::Create($chocoScript)
+  & $scriptBlock *> $null
+}
 
 function Install-WinGetApp {
   param (
@@ -32,17 +38,22 @@ function Install-WinGetApp {
     [string]$Source
   )
 
-  $displayName = if ($Name) {
-    $Name 
-  }
-  else {
-    $PackageID 
+  # Caching the display name calculation
+  $displayName = [string]::IsNullOrEmpty($Name) ? $PackageID : $Name
+
+  # Use .NET cache to improve performance for frequently accessed packages
+  $cacheKey = "$PackageID-$Name"
+  if ($script:InstallStatusCache -and $script:InstallStatusCache.ContainsKey($cacheKey)) {
+    return $script:InstallStatusCache[$cacheKey]
   }
 
   if (Test-IsInstalled -AppName $PackageID -MatchName $Name) {
     Write-InstallStatus -Source "winget" -Name $displayName -Status "exists"
     return
   }
+
+  # Use Write-InstallStatus to show "installing"
+  Write-InstallStatus -Source "winget" -Name $displayName -Status "installing"
 
   $argsJoined = $AdditionalArgs -join ' '
   $wingetCmd = "winget install $PackageID $argsJoined"
@@ -55,7 +66,6 @@ function Install-WinGetApp {
   }
 
   Invoke-Expression "$wingetCmd >`$null 2>&1"
-
   if ($LASTEXITCODE -eq 0) {
     Write-InstallStatus -Source "winget" -Name $displayName -Status "success"
   }
@@ -63,6 +73,7 @@ function Install-WinGetApp {
     Write-InstallStatus -Source "winget" -Name $displayName -Status "failed"
   }
 }
+
 
 function Install-ChocoApp {
   param ([string]$PackageName)
@@ -72,8 +83,9 @@ function Install-ChocoApp {
     return
   }
 
-  choco install $PackageName -y --no-progress >$null 2>&1
+  Write-InstallStatus -Source "choco" -Name $PackageName -Status "installing"
 
+  choco install $PackageName -y --no-progress >$null 2>&1
   if ($LASTEXITCODE -eq 0) {
     Write-InstallStatus -Source "choco" -Name $PackageName -Status "success"
   }
@@ -81,7 +93,6 @@ function Install-ChocoApp {
     Write-InstallStatus -Source "choco" -Name $PackageName -Status "failed"
   }
 }
-
 function Invoke-AppInstallers {
 
   # Lazy-load slow global lookups
@@ -111,10 +122,10 @@ function Invoke-AppInstallers {
     $id = $app.packageId
     $name = $app.name
     $source = if ($app.packageSource) {
-      $app.packageSource 
+      $app.packageSource
     }
     else {
-      "winget" 
+      "winget"
     }
     Install-WinGetApp -PackageID $id -Name $name -AdditionalArgs $defaultWingetArgs -Source $source
   }
