@@ -9,6 +9,11 @@
 			"name": "Visual Studio Code"
 		},
 		{
+			"packageId": "9PNRBTZXMB4Z",
+			"packageSource": "msstore",
+			"name": "Python 3.13"
+		},
+		{
 			"packageId": "9NTSNMSVCB5L",
 			"packageSource": "msstore",
 			"name": "Screenbox"
@@ -67,21 +72,17 @@
 		{
 			"packageName": "7zip"
 		},
-		{
-			"packageName": "python"
-		},
+
 		{
 			"packageName": "adb"
 		},
 		{
-			"packageName": "vim"
+			"packageName": "neovim"
 		},
 		{
 			"packageName": "wingetui"
 		},
-		{
-			"packageName": "git"
-		},
+
 		{
 			"packageName": "starship"
 		}
