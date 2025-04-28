@@ -19,14 +19,19 @@ function Initialize-Dotfiles {
 
   $dotfiles = Get-Content $ConfigPath | ConvertFrom-Json
 
-  # Backup the .config folder (if exists)
-  $configFolder = Join-Path $homeDir ".config"
-  if (Test-Path $configFolder -PathType Container) {
-    $timestamp = Get-Date -Format "yyyyMMdd_HHmmss"
-    $backupConfigFolder = "$configFolder.bak_$timestamp"
-    Write-WarningStyled "Backing up .config folder"
-    Rename-Item -Path $configFolder -NewName $backupConfigFolder
+
+  function Compress-Path {
+    param (
+      [string]$Path,
+      [string]$HomeDir
+    )
+    $escapedHomeDir = [Regex]::Escape($HomeDir)
+    $relativePath = $Path -replace "^$escapedHomeDir", '~'
+    return $relativePath -replace '\\AppData\\Local\\[^\\]+\\[^\\]+', '\\AppData\\...'
   }
+
+  # Backup the .config folder (if exists)
+  Backup-IfExists -Path (Join-Path $homeDir ".config")
 
   foreach ($entry in $dotfiles) {
     # Expand environment variables in source and target paths
@@ -49,13 +54,7 @@ function Initialize-Dotfiles {
 
     # Handle backup of .gitconfig file
     if ($target -eq "$homeDir\.gitconfig") {
-      $timestamp = Get-Date -Format "yyyyMMdd_HHmmss"
-      $backupTarget = "$target.bak_$timestamp"
-
-      if (Test-Path $target) {
-        Write-WarningStyled "Backing up existing $target"
-        Rename-Item -Path $target -NewName $backupTarget
-      }
+      Backup-IfExists -Path $target
     }
 
     # Copy file or directory based on type
@@ -66,13 +65,18 @@ function Initialize-Dotfiles {
       }
 
       Copy-Item -Path $source -Destination $target -Force
+      $relativePath = Compress-Path -Path $target -HomeDir $homeDir
 
-      $relativePath = $target -replace "^$escapedHomeDir", '~'
-
-      # Compress AppData path for easier readability
-      $relativePath = $relativePath -replace '\\AppData\\Local\\[^\\]+\\[^\\]+', '\\AppData\\...'
-
-      Write-Info "Copied file → $relativePath"
+      # Special check to distinguish between winget and terminal settings.json
+      if ($entry.source -eq 'winget/settings.json') {
+        Write-Info "Copied Winget settings.json from → $relativePath"
+      }
+      elseif ($entry.source -eq 'terminal/settings.json') {
+        Write-Info "Copied Terminal settings.json → $relativePath"
+      }
+      else {
+        Write-Info "Copied file → $relativePath"
+      }
     }
     elseif ($entryType -eq 'directory') {
       if (Test-Path $target -PathType Leaf) {
@@ -83,11 +87,7 @@ function Initialize-Dotfiles {
       }
 
       Copy-Item -Path (Join-Path $source '*') -Destination $target -Recurse -Force
-
-      $relativePath = $target -replace "^$escapedHomeDir", '~'
-
-      # Compress AppData path for easier readability
-      $relativePath = $relativePath -replace '\\AppData\\Local\\[^\\]+\\[^\\]+', '\\AppData\\...'
+      $relativePath = Compress-Path -Path $target -HomeDir $homeDir
 
       Write-Info "Copied directory → $relativePath"
     }
