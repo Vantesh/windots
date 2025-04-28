@@ -38,61 +38,90 @@ function Install-WinGetApp {
     [string]$Source
   )
 
-  # Caching the display name calculation
-  $displayName = [string]::IsNullOrEmpty($Name) ? $PackageID : $Name
-
-  # Use .NET cache to improve performance for frequently accessed packages
-  $cacheKey = "$PackageID-$Name"
-  if ($script:InstallStatusCache -and $script:InstallStatusCache.ContainsKey($cacheKey)) {
-    return $script:InstallStatusCache[$cacheKey]
+  # Init install status cache
+  if (-not $script:InstallStatusCache) {
+    $script:InstallStatusCache = @{}
   }
 
-  if (Test-IsInstalled -AppName $PackageID -MatchName $Name) {
-    Write-InstallStatus -Source "winget" -Name $displayName -Status "exists"
+  $displayName = $Name ?? $PackageID
+  $cacheKey = "$PackageID-$displayName"
+
+  # Check if the app is already cached
+  if ($script:InstallStatusCache.ContainsKey($cacheKey)) {
     return
   }
 
-  # Use Write-InstallStatus to show "installing"
-  Write-InstallStatus -Source "winget" -Name $displayName -Status "installing"
+  # If app is installed, show "exists" using Write-InstallStatus, then return
+  if (Test-IsInstalled -AppName $PackageID -MatchName $Name) {
+    Write-InstallStatus -Source 'winget' -Name $displayName -Status 'exists'
+    $script:InstallStatusCache[$cacheKey] = 'exists'
+    return
+  }
 
-  $argsJoined = $AdditionalArgs -join ' '
-  $wingetCmd = "winget install $PackageID $argsJoined"
+  # Show "installing" status when starting installation
+  Write-InstallStatus -Source 'winget' -Name $displayName -Status 'installing'
 
+  $args = @("install", $PackageID) + $AdditionalArgs
   if ($Source -eq "msstore") {
-    $wingetCmd += " --source msstore"
+    $args += "--source msstore"
   }
   else {
-    $wingetCmd += " --source winget"
+    $args += "--source winget"
   }
 
-  Invoke-Expression "$wingetCmd >`$null 2>&1"
+  # Actual install
+  $null = Invoke-Expression ("winget " + ($args -join ' ')) *> $null 2>&1
+
+  # If installation was successful, show success
   if ($LASTEXITCODE -eq 0) {
-    Write-InstallStatus -Source "winget" -Name $displayName -Status "success"
+    Write-InstallStatus -Source 'winget' -Name $displayName -Status 'success'
+    $script:InstallStatusCache[$cacheKey] = 'success'
   }
   else {
-    Write-InstallStatus -Source "winget" -Name $displayName -Status "failed"
+    Write-InstallStatus -Source 'winget' -Name $displayName -Status 'failed'
+    $script:InstallStatusCache[$cacheKey] = 'failed'
   }
 }
-
 
 function Install-ChocoApp {
   param ([string]$PackageName)
 
-  if (Test-IsInstalled -AppName $PackageName) {
-    Write-InstallStatus -Source "choco" -Name $PackageName -Status "exists"
+  # Init install status cache
+  if (-not $script:InstallStatusCache) {
+    $script:InstallStatusCache = @{}
+  }
+
+  $cacheKey = "choco-$PackageName"
+
+  # Check if the app is already cached
+  if ($script:InstallStatusCache.ContainsKey($cacheKey)) {
     return
   }
 
+  # If app is installed, show "exists" using Write-InstallStatus, then return
+  if (Test-IsInstalled -AppName $PackageName) {
+    Write-InstallStatus -Source "choco" -Name $PackageName -Status "exists"
+    $script:InstallStatusCache[$cacheKey] = 'exists'
+    return
+  }
+
+  # Show "installing" status when starting installation
   Write-InstallStatus -Source "choco" -Name $PackageName -Status "installing"
 
+  # Install the app via Chocolatey
   choco install $PackageName -y --no-progress >$null 2>&1
+
+  # If installation was successful, show success
   if ($LASTEXITCODE -eq 0) {
     Write-InstallStatus -Source "choco" -Name $PackageName -Status "success"
+    $script:InstallStatusCache[$cacheKey] = 'success'
   }
   else {
     Write-InstallStatus -Source "choco" -Name $PackageName -Status "failed"
+    $script:InstallStatusCache[$cacheKey] = 'failed'
   }
 }
+
 function Invoke-AppInstallers {
 
   # Lazy-load slow global lookups
