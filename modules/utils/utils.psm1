@@ -285,3 +285,33 @@ function Backup-IfExists {
     Rename-Item -Path $Path -NewName $backupPath
   }
 }
+function Set-RegistryValue {
+  [CmdletBinding()]
+  param (
+    [Parameter(Mandatory)]
+    [string]$Path,
+
+    [Parameter(Mandatory)]
+    [string]$Name,
+
+    [Parameter(Mandatory)]
+    [object]$Value
+  )
+
+  if (-not (Test-Path $Path)) {
+    try {
+      New-Item -Path $Path -Force | Out-Null
+    }
+    catch {
+      Write-ErrorStyled "Failed to create registry path: $Path"
+      return
+    }
+  }
+
+  try {
+    Set-ItemProperty -Path $Path -Name $Name -Value $Value -Force
+  }
+  catch {
+    Write-ErrorStyled "Failed to set registry value: $($_.Exception.Message)"
+  }
+}
