@@ -15,23 +15,25 @@ function Install-Office {
     }
     catch {
       Write-ErrorStyled "Failed to download ODT: $_"
-      return
+      return $false
     }
   }
 
   # Ensure config file exists
   if (-not (Test-Path $configPath)) {
     Write-ErrorStyled "Missing Office config: $configPath"
-    return
+    return $false
   }
 
   # Start the Office installer
   try {
-    Write-Info "Starting Office installation..."
+    Write-WarningStyled "Starting Office installation..."
     Start-Process -FilePath $setupExe -ArgumentList "/configure `"$configPath`"" -Wait -NoNewWindow
     Write-Info "Office installation complete."
+    return $true
   }
   catch {
     Write-ErrorStyled "Failed to start the Office installer: $_"
+    return $false
   }
 }
