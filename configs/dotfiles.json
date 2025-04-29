@@ -20,7 +20,12 @@
 		"type": "directory"
 	},
 	{
-		"source": "terminal/lscolors",
+		"source": "bat",
+		"target": "%USERPROFILE%/.config/bat",
+		"type": "directory"
+	},
+	{
+		"source": "lscolors",
 		"target": "%USERPROFILE%/.config/lscolors",
 		"type": "directory"
 	},
