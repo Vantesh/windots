@@ -86,5 +86,29 @@
 		{
 			"packageName": "starship"
 		}
+	],
+	//bloatware list
+	"bloatware": [
+		"Microsoft.OneDrive",
+		"*LinkedInforWindows",
+		"facebook",
+		"Clipchamp.Clipchamp",
+		"Microsoft.GamingApp",
+		"Microsoft.BingNews",
+		"Microsoft.ZuneMusic",
+		"Microsoft.GamingApp",
+		"Microsoft.BingSearch",
+		"Microsoft.BingFinance",
+		"Microsoft.BingMaps",
+		"Microsoft.Windows.DevHome",
+		"Microsoft.Copilot",
+		"Microsoft.MicrosoftOfficeHub",
+		"Microsoft.MicrosoftSolitaireCollection",
+		"Windows web experience Pack", // windows 11 widgets
+		"Microsoft.GrooveMusic",
+		"Microsoft.WindowsSoundRecorder",
+		"Microsoft.BingWeather",
+		"Microsoft.Todos",
+		"Microsoft.News"
 	]
 }
