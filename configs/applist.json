@@ -66,6 +66,10 @@
 		{
 			"packageId": "Obsidian.Obsidian",
 			"name": "Obsidian"
+		},
+		{
+			"packageId": "dandavison.delta",
+			"name": "Delta"
 		}
 	],
 	"choco": [
@@ -81,10 +85,6 @@
 		},
 		{
 			"packageName": "wingetui"
-		},
-
-		{
-			"packageName": "starship"
 		}
 	],
 	//bloatware list
