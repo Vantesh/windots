@@ -166,9 +166,33 @@ function Test-IsOnline {
   }
 }
 
-function Test-IsWSL {
-  return $null -ne $env:WSL_DISTRO_NAME
+function Test-WSLDistroExists {
+  param (
+    [string]$DistroName
+  )
+
+  return wsl.exe --list --quiet | ForEach-Object { $_.Trim().ToLower() } | Where-Object { $_ -eq $DistroName.ToLower() }
 }
+
+function Convert-ToWSLPath {
+  param (
+    [Parameter(Mandatory = $true)]
+    [string]$WindowsPath
+  )
+
+  # Convert the drive letter to lowercase and replace backslashes with forward slashes
+  if ($WindowsPath -match "^([A-Za-z]):\\") {
+    $DriveLetter = $matches[1].ToLower()  # Convert drive letter to lowercase
+    $WSLPath = $WindowsPath -replace "^${DriveLetter}:", "/mnt/$DriveLetter" -replace '\\', '/'
+  }
+  else {
+    # If the path does not match the expected pattern, return as is
+    $WSLPath = $WindowsPath -replace '\\', '/'
+  }
+
+  return $WSLPath
+}
+
 
 function Test-IsInstalled {
   param (
