@@ -93,7 +93,7 @@ function Invoke-ArchSetup {
     Write-Info "Converted paths: $SetupScriptPathWSL and $PostInstallScriptPathWSL"
 
 
-    # Run the setup script inside WSL, then post-install script if the first one succeeds
+    # Run the setup script inside WSL, then post-install script after a short delay
     Write-Info "Running setup script inside WSL..."
     wsl "$SetupScriptPathWSL"
     # shut down WSL to ensure the changes take effect
