@@ -1,6 +1,6 @@
 version = 3
 final_space = true
-console_title_template = "{{if .Root}}Admin :: {{end}}{{.Folder}}"
+console_title_template = "{{if .Root}}{{.UserName}} :: {{end}}{{.Folder}}"
 [upgrade]
   source = 'cdn'
   interval = '168h'
@@ -14,7 +14,7 @@ console_title_template = "{{if .Root}}Admin :: {{end}}{{.Folder}}"
 
 
   [[blocks.segments]]
-    template = "{{if .Root}}<p:red>Admin</>{{else}}{{ if .SSHSession }} {{ end }}{{.UserName}}{{ end }}"
+    template = "{{if .Root}}<p:red>{{.UserName}}</>{{else}}{{ if .SSHSession }} {{ end }}{{.UserName}}{{ end }}"
     foreground = 'lightYellow'
     type = 'session'
     style = 'plain'
