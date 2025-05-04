@@ -1,1 +1,1 @@
-# Windots
+![Logo](./docs/banner.png)
