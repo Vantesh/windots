@@ -56,6 +56,10 @@
 			"name": "Windhawk"
 		},
 		{
+			"packageId": "Zen-Team.Zen-Browser",
+			"name": "Zen Browser"
+		},
+		{
 			"packageId": "Tonec.InternetDownloadManager",
 			"name": "Internet Download Manager"
 		},
