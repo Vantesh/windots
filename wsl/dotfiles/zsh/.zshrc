@@ -2,19 +2,10 @@
 #ls color theme
 vivid_theme="catppuccin-mocha"
 
-#Set ANTIDOTE
-if [[ $EUID -eq 0 ]]; then
-  export ANTIDOTE_DIR="${ZDOTDIR:-$HOME}/.antidote"
-  export ANTIDOTE_CACHE="${XDG_CACHE_HOME:-/root/.cache}/antidote"
-else
-  export ANTIDOTE_DIR="${ZDOTDIR:-$HOME}/.antidote"
-  export ANTIDOTE_CACHE="${XDG_CACHE_HOME:-$HOME/.cache}/antidote"
-fi
-
 # clone antidote if it doesn't exist
-if [ ! -d "$ANTIDOTE_DIR" ]; then
+if [ ! -d "${ZDOTDIR:-$HOME}/.antidote" ]; then
   echo "Cloning antidote..."
-  git clone --depth=1 https://github.com/mattmc3/antidote.git "$ANTIDOTE_DIR"
+  git clone --depth=1 https://github.com/mattmc3/antidote.git "${ZDOTDIR:-$HOME}/.antidote"
 fi
 
 # Lazy-load antidote and generate the static load file only when needed
@@ -49,7 +40,8 @@ alias cat="bat --style header --style snip --style changes --style header"
 alias vim="nvim"
 alias	ls="eza -a --icons=always --color=always --group-directories-first"
 alias ll="eza -al --icons=always --color=always --group-directories-first"
-alias df='df -h'
+alias df='duf --output mountpoint,size,avail,type,filesystem'
+alias du='dust -r'
 alias free='free -m'
 alias h='history'
 alias up="sudo pacman -Syu"
