@@ -30,7 +30,7 @@ SAVEHIST=10000
 HISTDUP=erase
 
 # General Aliases
-alias grep="grep --color=auto"
+alias grep="rg -uuu"
 alias diff="diff --color=auto"
 alias rm="rm -ri"
 alias mv="mv -i"
@@ -43,6 +43,7 @@ alias ll="eza -al --icons=always --color=always --group-directories-first"
 alias df='duf --output mountpoint,size,avail,type,filesystem'
 alias du='dust -r'
 alias free='free -m'
+alias find='fd'
 alias h='history'
 alias up="sudo pacman -Syu"
 
