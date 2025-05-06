@@ -109,7 +109,6 @@ EOF
   else
     cat <<'EOF' >"$orphan_hook_file"
 [Trigger]
-Operation = Install
 Operation = Upgrade
 Operation = Remove
 Type = Package
@@ -118,8 +117,7 @@ Target = *
 [Action]
 Description = Cleaning orphaned packages...
 When = PostTransaction
-Exec = /bin/bash -c "orphans=\$(pacman -Qtdq); if [[ -n \$orphans ]]; then /usr/bin/pacman -Rns \$orphans; else /usr/bin/echo '==> No orphans found.'; fi"
-
+Exec = /bin/bash -c 'orphans=$(pacman -Qtdq); if [[ -n "$orphans" ]]; then /usr/bin/pacman -Rns $orphans; else /usr/bin/echo "==> No orphans found."; fi'
 EOF
     echo -e "${GREEN}Orphan cleanup hook created at ${orphan_hook_file}${NC}"
   fi

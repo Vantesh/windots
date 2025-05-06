@@ -7,7 +7,6 @@ trap 'error "Script failed at line $LINENO"; exit 1' ERR
 APPS=(
   zsh
   neovim
-  oh-my-posh-bin
   fzf
   zoxide
   bat
@@ -16,6 +15,7 @@ APPS=(
   duf
   eza
   ripgrep
+  oh-my-posh-bin
 )
 
 ### HELPERS ###
@@ -229,8 +229,6 @@ load_themes() {
   "
 }
 
-info "Disabling first-setup welcome message..."
-
 ## EXECUTION ###
 install_paru
 copy_dotfiles
@@ -247,7 +245,7 @@ success "✅ Post-installation complete!"
 
 if [[ -f /etc/wsl-distribution.conf ]]; then
   sudo sed -i 's/^\(command *=.*\)/# \1/' /etc/wsl-distribution.conf
-  success "Disabled first-setup command in /etc/wsl-distribution.conf"
+  success "Hushed login message"
   info "Shutting down WSL to apply changes..."
   powershell.exe -Command "wsl --shutdown"
 
