@@ -1,4 +1,3 @@
-
 #ls color theme
 vivid_theme="catppuccin-mocha"
 
@@ -9,12 +8,15 @@ if [ ! -d "${ZDOTDIR:-$HOME}/.antidote" ]; then
 fi
 
 # Lazy-load antidote and generate the static load file only when needed
-zsh_plugins=${ZDOTDIR:-$HOME}/.zsh_plugins
-if [[ ! ${zsh_plugins}.zsh -nt ${zsh_plugins}.txt ]]; then
+# Lazy-load antidote and generate the static load file only when needed
+zsh_plugins=${ZDOTDIR:-$HOME}/.zsh_plugins.zsh
+plugins_conf=${ZDOTDIR:-$HOME}/plugins.conf
+if [[ ! $zsh_plugins -nt $plugins_conf ]]; then
   source "${ZDOTDIR:-$HOME}/.antidote/antidote.zsh"
-  antidote bundle <${zsh_plugins}.txt >${zsh_plugins}.zsh
+  antidote bundle <$plugins_conf >$zsh_plugins
 fi
-source ${zsh_plugins}.zsh
+source $zsh_plugins
+
 # Lazy-load antidote from its functions directory.
 fpath=(${ZDOTDIR:-$HOME}/.antidote/functions $fpath)
 autoload -Uz antidote
@@ -22,7 +24,7 @@ autoload -Uz antidote
 export VISUAL="nvim"
 export EDITOR="nvim"
 export TERM=xterm-256color
-
+export COLORTERM=truecolor
 #history
 HISTFILE="${ZDOTDIR}/.zsh_history"
 HISTSIZE=10000
@@ -80,7 +82,6 @@ if [ -f "${ZDOTDIR}/optionrc" ]; then
   source "${ZDOTDIR}/optionrc"
 fi
 
-
 if command -v fzf &>/dev/null; then
  eval "$(fzf --zsh)"
 export FZF_DEFAULT_OPTS=" \
@@ -102,3 +103,4 @@ fi
 if command -v zoxide &>/dev/null; then
   eval "$(zoxide init --cmd cd zsh)"
 fi
+
