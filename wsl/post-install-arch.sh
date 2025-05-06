@@ -15,6 +15,7 @@ APPS=(
   duf
   eza
   ripgrep
+  pkgfile
   oh-my-posh-bin
 )
 
@@ -221,12 +222,15 @@ change_root_shell() {
   sudo ln -s "$HOME/.cache/antidote" /root/.cache/
   success "Root shell changed to zsh"
 }
-
-load_themes() {
+load_miscellaneous() {
+  info "Setting up command-not-found..."
+  sudo pkgfile -u
+  info "initializing antidote..."
   zsh -i -c "
     source '/home/$USER/.config/zsh/.zshrc';
     antidote load;
   "
+
 }
 
 ## EXECUTION ###
@@ -240,7 +244,7 @@ done
 append_to_zshenv
 set_zsh_as_default_shell
 change_root_shell
-load_themes
+load_miscellaneous
 success "✅ Post-installation complete!"
 
 if [[ -f /etc/wsl-distribution.conf ]]; then
