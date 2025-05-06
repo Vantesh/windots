@@ -79,10 +79,7 @@ setup_pacman_hooks() {
   echo -e "${YELLOW}Setting up pacman hooks...${NC}"
   local hooks_dir="/etc/pacman.d/hooks"
   local cache_hook_file="$hooks_dir/paccache.hook"
-  local orphan_hook_file="$hooks_dir/clean-orphans.hook"
-
   mkdir -p "$hooks_dir"
-
   # Pacman Cache Clean Hook
   if [[ -f "$cache_hook_file" ]]; then
     echo -e "${GREEN}Pacman cache clean hook already exists at ${cache_hook_file}${NC}"
@@ -101,25 +98,6 @@ When = PostTransaction
 Exec = /usr/bin/paccache -rk2 -ruk0
 EOF
     echo -e "${GREEN}Pacman cache cleaning hook created at ${cache_hook_file}${NC}"
-  fi
-
-  # Orphan Cleanup Hook
-  if [[ -f "$orphan_hook_file" ]]; then
-    echo -e "${GREEN}Orphan cleanup hook already exists.${NC}"
-  else
-    cat <<'EOF' >"$orphan_hook_file"
-[Trigger]
-Operation = Upgrade
-Operation = Remove
-Type = Package
-Target = *
-
-[Action]
-Description = Cleaning orphaned packages...
-When = PostTransaction
-Exec = /bin/bash -c 'orphans=$(pacman -Qtdq); if [[ -n "$orphans" ]]; then /usr/bin/pacman -Rns $orphans; else /usr/bin/echo "==> No orphans found."; fi'
-EOF
-    echo -e "${GREEN}Orphan cleanup hook created at ${orphan_hook_file}${NC}"
   fi
 }
 
