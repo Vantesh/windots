@@ -180,7 +180,7 @@ create_user_account() {
   while true; do
     read -rp "Enter new username: " USERNAME
     if ! [[ "$USERNAME" =~ ^[a-z][a-z0-9_-]{2,15}$ ]]; then
-      echo -e "${RED}Invalid username format. Must start with a letter and be 3-16 chars.${NC}"
+      echo -e "${RED}Invalid username format. Must start with small letters and be 3-16 chars.${NC}"
       continue
     fi
     if id "$USERNAME" &>/dev/null; then
